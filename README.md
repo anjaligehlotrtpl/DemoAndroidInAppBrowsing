@@ -216,9 +216,9 @@ The object returned from a call to `cordova.InAppBrowser.open` when the target i
   - __loadstop__: event fires when the `InAppBrowser` finishes loading a URL.
   - __loaderror__: event fires when the `InAppBrowser` encounters an error when loading a URL.
   - __exit__: event fires when the `InAppBrowser` window is closed.
-  - __beforeload__: event fires when the `InAppBrowser` decides whether to load an URL or not (only with option `beforeload` set).
+  - __beforeload__: event fires when the `InAppBrowser` decides whether to load an URL or not (only with option `beforeload=yes`).
   - __message__: event fires when the `InAppBrowser` receives a message posted from the page loaded inside the `InAppBrowser` Webview.
-
+  - __customscheme__: event fires when a link is followed that matches `AllowedSchemes` (Android, iOS).
 - __callback__: the function that executes when the event fires. The function is passed an `InAppBrowserEvent` object as a parameter.
 
 ## Example
@@ -340,6 +340,10 @@ function messageCallBack(params){
 - Windows
 - OSX
 
+### iOS Quirks
+
+`loadstop` is being fired after a `customscheme` event. The event URL is that of the currently loaded page, not the URL with the custom scheme.
+
 ### Browser Quirks
 
 `loadstart`, `loaderror`, `message` events are not fired.
@@ -367,6 +371,7 @@ function messageCallBack(params){
   - __loadstop__: event fires when the `InAppBrowser` finishes loading a URL.
   - __loaderror__: event fires when the `InAppBrowser` encounters an error loading a URL.
   - __exit__: event fires when the `InAppBrowser` window is closed.
+  - __customscheme__: event fires when a link is followed that matches `AllowedSchemes` (Android, iOS).
   - __message__: event fires when the `InAppBrowser` receives a message posted from the page loaded inside the `InAppBrowser` Webview.
 
 - __callback__: the function to execute when the event fires.
@@ -669,6 +674,35 @@ function executeScriptCallBack(params) {
 }
 
 ```
+
+### <a id="events_from_browser"></a>Events from the browser
+
+Sometimes you may want to respond to an event happening on the page loaded in the browser,
+for example a button to open the barcode scanner, or closing the browser when a login flow
+was finished. This can done by navigating to a URL with a custom scheme listed in the
+`AllowedSchemes` preference in `config.xml`, triggering a `customscheme` event on the
+browser. Multiple values are separated by comma's.
+
+In `config.xml`, include the following:
+```xml
+<preference name="AllowedSchemes" value="app" />
+```
+
+```javascript
+function onCustomScheme(e) {
+  if (e.url === 'app://hide') {
+    inAppBrowserRef.hide();
+  }
+}
+
+inAppBrowserRef = cordova.InAppBrowser.open('https://example.com', '_blank');
+inAppBrowserRef.addEventListener('customscheme', onCustomScheme);
+```
+
+When the opened page navigates to the link `app://hide`, the browser is hidden.
+
+Please note that this feature is only available on Android and iOS (pull requests
+for other platforms are welcome).
 
 ## More Usage Info
 
