@@ -31,8 +31,8 @@
 
     <engines>
         <engine name="cordova" version=">=9.0.0"/>
-        <engine name="cordova-android" version=">=9.0.0" />
-        <engine name="cordova-ios" version=">=6.0.0" />
+        <!-- <engine name="cordova-android" version=">=9.0.0" />
+        <engine name="cordova-ios" version=">=6.0.0" /> -->
     </engines>
 
     <!-- android -->
